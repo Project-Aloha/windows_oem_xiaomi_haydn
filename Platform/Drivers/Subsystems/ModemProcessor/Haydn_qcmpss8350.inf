@@ -1,0 +1,134 @@
+;/*++
+;
+;Copyright (c) 2021 by Qualcomm Technologies, Incorporated.  All Rights Reserved.
+;
+;Module Name:
+;    QCMPSS.INX
+;
+;Abstract:
+;    INF file for installing the combined subsystem driver
+;
+;--*/
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = SYSTEM
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider    = %QUALCOMM%
+DriverVer   = 11/25/2023, 2.0.3905.8700
+CatalogFile = Haydn_qcmpss8350.cat
+PnpLockDown = 1
+
+[DestinationDirs]
+Drivers_Dir = 13
+
+[SourceDisksNames]
+1 = %DiskId1%
+
+[SourceDisksFiles]
+qcmpss8350.sys = 1
+
+[ControlFlags]
+ExcludeFromSelect = *
+
+;*****************************************
+; Subsystem Driver Install Section
+;*****************************************
+
+[Manufacturer]
+%QUALCOMM% = Standard, NTARM64.10.0...16299
+
+[WDTFSOCDeviceCategory]
+{5D078032-6378-437B-8DA5-9B32B7CA3FDD}, 2, 7,, 2
+
+[Standard.NTARM64.10.0...16299]
+%SERVICEMANAGER.DeviceDesc% = SUBSYS_Device_QSM, ACPI\QCOM1A1E
+%AMSS.DeviceDesc%           = SUBSYS_Device,     ACPI\QCOM1A1C
+
+
+[SUBSYS_Device.NT]
+CopyFiles   = Drivers_Dir
+AddProperty = WDTFSOCDeviceCategory
+
+[SUBSYS_Device.NT.HW]
+AddReg = SUBSYSACL, Default_PDInfo
+
+[SUBSYS_Device_QSM.NT]
+CopyFiles   = Drivers_Dir
+AddProperty = WDTFSOCDeviceCategory
+AddReg      = QSMReg_NT
+
+[SUBSYS_DEVICE_QSM.NT.HW]
+AddReg = SUBSYSACL
+
+;-------------- Service installation
+[SUBSYS_Device.NT.Services]
+AddService = qcmpss, %SPSVCINST_ASSOCSERVICE%, SUBSYS_Service_Inst
+
+[SUBSYS_Device_QSM.NT.Services]
+AddService = qcmpss, %SPSVCINST_ASSOCSERVICE%, SUBSYS_Service_Inst
+
+[SUBSYSACL]
+HKR,, Security,, "D:P(A;;GA;;;BA)(A;;GA;;;SY)(A;;GA;;;S-1-5-84-0-0-0-0-0)"
+
+[Drivers_Dir]
+qcmpss8350.sys
+
+[Default_PDInfo]
+HKR, PDInfo, "NumPDs", %REG_DWORD%, 0x00000000
+
+[QSMReg_NT]
+; Format of MemClientInfo in parser. MemClientInfo can have array of below sequence of data.
+; typedef struct _QSM_MEMORYREGION_DESCRIPTOR
+; {
+;     WCHAR       memoryRegionName[QSM_MAX_LEN_MEMORYREGION_NAME]; // Client name eg: "Diag", "GPS"
+;     GUID        memoryRegionId; // NULL GUID indicate no crash-dump for this client
+;     ULONG       maxCmaSize; // Max CMA size (not supported), 0 = Use_carveout
+;     ULONG       bufferAddr; // Address of the region if Use_carveout = 0, else ignored.
+;     ULONG       bufferSize; // Size of the region if Use_carveout = 0, else ignored.
+; } QSM_MEMORYREGION_DESCRIPTOR, *PQSM_MEMORYREGION_DESCRIPTOR;
+HKR, QSM\DHMSS, "MemClientInfo", %REG_MULTI_SZ%, "Diag", "{00000000-0000-0000-0000-000000000000}", "0", "0x9F000000", "0x00600000"
+
+;QSMG--QSM General Platform-specific Configuration
+HKR, QSM, "QSMG", %REG_DWORD%, 2; // 0 -Disabled, 1- Enabled and HLOS no need to reclaim memory back, 2- Enabled and HLOS need to reclaim memory back.
+
+; -------------- Subsystem driver install sections
+[SUBSYS_Service_Inst]
+DisplayName   = %SUBSYS.SVCDESC%
+ServiceType   = 1               ; SERVICE_KERNEL_DRIVER
+StartType     = 3               ; SERVICE_DEMAND_START (3) SERVICE_SYSTEM_START (1)
+ErrorControl  = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary = %13%\qcmpss8350.sys
+AddReg        = SUBSYSINST
+
+[SUBSYSINST]
+HKR, Parameters\DHMSS, "Disable",            %REG_DWORD%, 1
+HKR, Parameters,       "AMSSRestartEnabled", %REG_DWORD%, 1
+
+[SUBSYS_Device.NT.Wdf]
+KmdfService = qcmpss, SUBSYS_wdfsect
+[SUBSYS_wdfsect]
+KmdfLibraryVersion = 1.31
+
+;***************************************************************************************************************************
+;    DONOT DELETE THE EMPTY PLACEHOLDERS BELOW. THEY WILL BE AUTOPOPULATED DURING BUILD TIME
+;***************************************************************************************************************************
+
+
+
+[Strings]
+; non localizable
+REG_SZ                 = 0x00000000
+REG_DWORD              = 0x00010001
+REG_BINARY             = 0x00000001
+REG_MULTI_SZ           = 0x00010000
+SPSVCINST_ASSOCSERVICE = 0x00000002
+REG_QWORD              = 0x000B0001
+FASTRPC                = 1
+
+; localizable
+QUALCOMM                  = "Qualcomm Technologies, Incorporated"
+DiskId1                   = "Qualcomm Combined Subsystem Driver Installation Disk"
+SERVICEMANAGER.DeviceDesc = "Qualcomm Service Manager Device"
+SUBSYS.SVCDESC            = "Qualcomm Combined Subsystem Driver"
+AMSS.DeviceDesc           = "Qualcomm Advanced Modem Subsystem Device"
