@@ -1,9 +1,7 @@
 
-# Windows Driver pack for Surface Duo 2
+# Windows Driver pack for RedMi K40 PRO
 
-![Surface Duo 2 Dual Screen Windows](https://user-images.githubusercontent.com/3755345/197421028-afa8109a-ead9-46c9-985f-d0fac9e342ca.png)
-
-This repository contains driver binary files for Surface Duo 2.
+This repository contains driver binary files for RedMi K40 PRO.
 
 These driver files are not perfect, typos may exist, feel free to file an issue on GitHub in case you found any.
 
@@ -20,7 +18,7 @@ Please see [LICENSE](LICENSE.md)
 For preserving charset encoding, please checkout with using:
 
 ```
-git clone -c core.autocrlf=false https://github.com/WOA-Project/windows_oem_surface_dual_screen_zeta
+git clone -c core.autocrlf=false https://github.com/Project-Aloha/windows_oem_xiaomi_haydn
 ```
 
 ---
