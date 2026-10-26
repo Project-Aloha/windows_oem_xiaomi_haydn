@@ -8,7 +8,7 @@ Class       = Media
 ClassGuid   = {4d36e96c-e325-11ce-bfc1-08002be10318}
 Provider    = %ManufacturerName%
 CatalogFile = cs35l41.cat
-DriverVer = 10/24/2026,11.32.54.991
+DriverVer = 10/26/2026,19.44.24.201
 PnpLockdown = 1
 
 [DestinationDirs]
@@ -32,6 +32,9 @@ cs35l41.sys  = 1,,
 ; Decorated model section take precedence over undecorated 
 ; ones on XP and later.
 [Standard.NTARM64]
+; Xiaomi Pad 5
+%cs35l41.DeviceDesc% = cs35l41_Device, ACPI\10133541
+; Xiaomi 9
 %cs35l41.DeviceDesc% = cs35l41_Device, ACPI\CS35L41
 
 [cs35l41_Device.NT]
